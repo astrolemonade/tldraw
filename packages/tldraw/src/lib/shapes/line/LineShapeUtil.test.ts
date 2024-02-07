@@ -111,6 +111,101 @@ it('create new handle', () => {
 	})
 })
 
+describe('Snapping', () => {
+	beforeEach(() => {
+		editor.updateShape<TLLineShape>({
+			id: id,
+			type: 'line',
+			props: {
+				handles: {
+					start: {
+						id: 'start',
+						type: 'vertex',
+						canBind: false,
+						canSnap: true,
+						index: 'a1',
+						x: 0,
+						y: 0,
+					},
+					a: {
+						id: 'a',
+						type: 'vertex',
+						canBind: false,
+						index: 'a2',
+						x: 100,
+						y: 0,
+					},
+					b: {
+						id: 'b',
+						type: 'vertex',
+						canBind: false,
+						index: 'a3',
+						x: 100,
+						y: 100,
+					},
+					end: {
+						id: 'end',
+						type: 'vertex',
+						canBind: false,
+						canSnap: true,
+						index: 'a4',
+						x: 0,
+						y: 100,
+					},
+				},
+			},
+		})
+	})
+
+	it('snaps endpoints to itself', () => {
+		editor.select(id)
+		const shape = editor.getShape<TLLineShape>(id)!
+
+		editor
+			.pointerDown(0, 0, { target: 'handle', shape, handle: shape.props.handles.start })
+			.pointerMove(50, 95, undefined, { ctrlKey: true })
+
+		expect(editor.snaps.getIndicators()).toHaveLength(1)
+		editor.expectShapeToMatch({
+			id: id,
+			props: {
+				handles: {
+					...shape.props.handles,
+					start: {
+						...shape.props.handles.start,
+						x: 50,
+						y: 100,
+					},
+				},
+			},
+		})
+	})
+
+	it("doesn't snap to the segment of the current handle", () => {
+		editor.select(id)
+
+		const shape = editor.getShape<TLLineShape>(id)!
+		editor
+			.pointerDown(0, 0, { target: 'handle', shape, handle: shape.props.handles.start })
+			.pointerMove(5, 2, undefined, { ctrlKey: true })
+
+		expect(editor.snaps.getIndicators()).toHaveLength(0)
+		editor.expectShapeToMatch({
+			id: id,
+			props: {
+				handles: {
+					...shape.props.handles,
+					start: {
+						...shape.props.handles.start,
+						x: 5,
+						y: 2,
+					},
+				},
+			},
+		})
+	})
+})
+
 describe('Misc', () => {
 	it('preserves handle positions on spline type change', () => {
 		editor.select(id)

@@ -1,7 +1,4 @@
-import { computed } from '@tldraw/state'
-import { VecModel } from '@tldraw/tlschema'
-import { assertExists, deepCopy } from '@tldraw/utils'
-import { Mat } from '../../../primitives/Mat'
+import { assertExists } from '@tldraw/utils'
 import { Vec } from '../../../primitives/Vec'
 import { uniqueId } from '../../../utils/uniqueId'
 import { Editor } from '../../Editor'
@@ -30,13 +27,27 @@ export class HandleSnaps {
 			const handleSnapGeometry = this.manager.getShapeSnapInfo(shapeId)?.handleSnapGeometry
 			if (!handleSnapGeometry) continue
 
-			const nearestOnShape = handleSnapGeometry.nearestPoint(handlePoint)
-			const distance = Vec.Dist(handlePoint, nearestOnShape)
+			const shapePageTransform = assertExists(this.editor.getShapePageTransform(shapeId))
+			const pointInShapeSpace = this.editor.getPointInShapeSpace(shapeId, handlePoint)
+			const nearestShapePointInShapeSpace = handleSnapGeometry.nearestPoint(pointInShapeSpace)
+			const nearestInPageSpace = shapePageTransform.applyToPoint(nearestShapePointInShapeSpace)
+			const distance = Vec.Dist(handlePoint, nearestInPageSpace)
 
 			if (isNaN(distance)) continue
 			if (distance < minDistance) {
 				minDistance = distance
-				nearestPoint = nearestOnShape
+				nearestPoint = nearestInPageSpace
+			}
+		}
+
+		// handle additional segments:
+		for (const segment of additionalSegments) {
+			const nearestOnSegment = Vec.NearestPointOnLineSegment(segment[0], segment[1], handlePoint)
+			const distance = Vec.Dist(handlePoint, nearestOnSegment)
+
+			if (distance < minDistance) {
+				minDistance = distance
+				nearestPoint = nearestOnSegment
 			}
 		}
 

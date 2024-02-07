@@ -1,8 +1,8 @@
-import { react, track, useQuickReactor, useValue } from '@tldraw/state'
+import { atom, react, track, useQuickReactor, useValue } from '@tldraw/state'
 import { TLHandle, TLShapeId } from '@tldraw/tlschema'
 import { dedupe, modulate, objectMapValues } from '@tldraw/utils'
 import classNames from 'classnames'
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { COARSE_HANDLE_RADIUS, HANDLE_RADIUS } from '../constants'
 import { useCanvasEvents } from '../hooks/useCanvasEvents'
 import { useCoarsePointer } from '../hooks/useCoarsePointer'
@@ -21,6 +21,8 @@ import { GeometryDebuggingView } from './GeometryDebuggingView'
 import { LiveCollaborators } from './LiveCollaborators'
 import { Shape } from './Shape'
 import { ShapeIndicator } from './ShapeIndicator'
+
+export const dbg = atom<ReactNode>('dbg', null)
 
 /** @public */
 export function Canvas({ className }: { className?: string }) {
@@ -88,6 +90,7 @@ export function Canvas({ className }: { className?: string }) {
 	const debugGeometry = useValue('debug_geometry', () => debugFlags.debugGeometry.get(), [
 		debugFlags,
 	])
+	const dbgEl = useValue(dbg)
 
 	return (
 		<div
@@ -128,6 +131,7 @@ export function Canvas({ className }: { className?: string }) {
 					<SnapIndicatorWrapper />
 					<SelectionForegroundWrapper />
 					<LiveCollaborators />
+					{dbgEl && <svg className="tl-user-handles tl-overlays__item">{dbgEl}</svg>}
 				</div>
 				<InFrontOfTheCanvasWrapper />
 			</div>

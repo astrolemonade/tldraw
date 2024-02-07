@@ -16,6 +16,7 @@ import {
 	snapAngle,
 	sortByIndex,
 } from '@tldraw/editor'
+import { dbg } from '@tldraw/editor/src/lib/components/Canvas'
 
 export class DraggingHandle extends StateNode {
 	static override id = 'dragging_handle'
@@ -255,6 +256,22 @@ export class DraggingHandle extends StateNode {
 				.getOutlineSegments(shape)
 				.map((segment) => Mat.applyToPoints(pageTransform, segment))
 				.filter((_segment, i) => i !== handleIndex - 1 && i !== handleIndex)
+
+			dbg.set(
+				<>
+					{additionalSegments.map((segment, i) => (
+						<line
+							stroke="lime"
+							strokeWidth={1}
+							key={i}
+							x1={segment[0].x}
+							y1={segment[0].y}
+							x2={segment[1].x}
+							y2={segment[1].y}
+						/>
+					))}
+				</>
+			)
 
 			const snap = snaps.handles.snapHandle({
 				additionalSegments,

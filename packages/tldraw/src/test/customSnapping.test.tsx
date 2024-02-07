@@ -166,7 +166,7 @@ describe('custom handle snapping', () => {
 	>
 	class TestShapeUtil extends BaseBoxShapeUtil<TestShape> {
 		static override type = 'test'
-		override getDefaultProps() {
+		override getDefaultProps(): TestShape['props'] {
 			return { w: 100, h: 100, handleGeomVertices: 'default' }
 		}
 		override component() {
@@ -279,18 +279,18 @@ describe('custom handle snapping', () => {
 
 		test('does not snap to the normal edges of the shape', () => {
 			startDraggingHandle()
-			editor.pointerMove(215, 205, undefined, { ctrlKey: true })
+			editor.pointerMove(235, 205, undefined, { ctrlKey: true })
 			expect(editor.snaps.getIndicators()).toHaveLength(0)
-			expect(handlePosition().x).toBe(215)
+			expect(handlePosition().x).toBe(235)
 			expect(handlePosition().y).toBe(205)
 		})
 
 		test('snaps to the custom geometry', () => {
 			startDraggingHandle()
-			editor.pointerMove(213, 214, undefined, { ctrlKey: true })
+			editor.pointerMove(210, 214, undefined, { ctrlKey: true })
 			expect(editor.snaps.getIndicators()).toHaveLength(1)
-			expect(handlePosition().x).toBe(200)
-			expect(handlePosition().y).toBe(200)
+			expect(handlePosition().x).toBe(212)
+			expect(handlePosition().y).toBe(212)
 		})
 	})
 })

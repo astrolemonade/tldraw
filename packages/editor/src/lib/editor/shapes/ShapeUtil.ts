@@ -50,7 +50,7 @@ export interface ShapeSnapInfo {
 	/**
 	 * When dragging a handle, users can snap to the nearest point on a shape's geometry. This
 	 * property determines the geometry used for snapping. By default, it's the same returned by
-	 * {@link ShapeUtil['getGeometry']}.
+	 * {@link ShapeUtil.getGeometry}.
 	 *
 	 * Set this to `null` to disable handle geometry snapping entirely.
 	 */

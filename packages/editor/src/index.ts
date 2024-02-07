@@ -165,6 +165,7 @@ export {
 export { BaseBoxShapeUtil, type TLBaseBoxShape } from './lib/editor/shapes/BaseBoxShapeUtil'
 export {
 	ShapeUtil,
+	type ShapeSnapInfo,
 	type TLOnBeforeCreateHandler,
 	type TLOnBeforeUpdateHandler,
 	type TLOnBindingChangeHandler,

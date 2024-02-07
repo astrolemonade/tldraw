@@ -199,6 +199,8 @@ export class Box {
     // (undocumented)
     get corners(): Vec[];
     // (undocumented)
+    get cornersAndCenter(): Vec[];
+    // (undocumented)
     static Equals(a: Box | BoxModel, b: Box | BoxModel): boolean;
     // (undocumented)
     equals(other: Box | BoxModel): boolean;
@@ -264,8 +266,6 @@ export class Box {
     get sides(): Array<[Vec, Vec]>;
     // (undocumented)
     get size(): Vec;
-    // (undocumented)
-    get snapPoints(): Vec[];
     // (undocumented)
     snapToGrid(size: number): void;
     // (undocumented)
@@ -1039,10 +1039,6 @@ export abstract class Geometry2d {
     // (undocumented)
     nearestPointOnLineSegment(A: Vec, B: Vec): Vec;
     // (undocumented)
-    get snapPoints(): Vec[];
-    // (undocumented)
-    _snapPoints: undefined | Vec[];
-    // (undocumented)
     toSimpleSvgPath(): string;
     // (undocumented)
     get vertices(): Vec[];
@@ -1627,6 +1623,12 @@ export const ShapeIndicator: React_3.NamedExoticComponent<{
     className?: string | undefined;
 }>;
 
+// @public
+export interface ShapeSnapInfo {
+    boundsSnapPoints?: VecModel[];
+    handleSnapGeometry?: Geometry2d | null;
+}
+
 // @public (undocumented)
 export abstract class ShapeUtil<Shape extends TLUnknownShape = TLUnknownShape> {
     constructor(editor: Editor);
@@ -1652,6 +1654,7 @@ export abstract class ShapeUtil<Shape extends TLUnknownShape = TLUnknownShape> {
     abstract getGeometry(shape: Shape): Geometry2d;
     getHandles?(shape: Shape): TLHandle[];
     getOutlineSegments(shape: Shape): Vec[][];
+    getSnapInfo(shape: Shape): ShapeSnapInfo;
     hideResizeHandles: TLShapeUtilFlag<Shape>;
     hideRotateHandle: TLShapeUtilFlag<Shape>;
     hideSelectionBoundsBg: TLShapeUtilFlag<Shape>;
@@ -1735,6 +1738,8 @@ export class SnapManager {
     getCurrentCommonAncestor(): TLShapeId | undefined;
     // (undocumented)
     getIndicators(): SnapIndicator[];
+    // (undocumented)
+    getShapeSnapInfo(shapeId: TLShapeId): Required<ShapeSnapInfo> | undefined;
     // (undocumented)
     getSnappableShapes(): Set<TLShapeId>;
     // (undocumented)

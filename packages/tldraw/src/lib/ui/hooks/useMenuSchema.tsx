@@ -176,19 +176,19 @@ export function TLUiMenuSchemaProvider({ overrides, children }: TLUiMenuSchemaPr
 					),
 					menuGroup(
 						'selection',
-						showAutoSizeToggle && menuItem(actions['toggle-auto-size']),
-						showEditLink && menuItem(actions['edit-link']),
+						menuItem(actions['toggle-auto-size'], { disabled: !showAutoSizeToggle }),
+						menuItem(actions['edit-link'], { disabled: !showEditLink }),
 						menuItem(actions['duplicate'], { disabled: !oneSelected }),
-						allowGroup && menuItem(actions['group']),
-						allowUngroup && menuItem(actions['ungroup']),
+						menuItem(actions['group'], { disabled: !allowGroup }),
+						menuItem(actions['ungroup'], { disabled: !allowUngroup }),
 						menuItem(actions['unlock-all'], { disabled: emptyPage })
 					),
 					menuGroup('delete-group', menuItem(actions['delete'], { disabled: !oneSelected })),
 					menuGroup(
 						'embeds',
-						oneEmbedSelected && menuItem(actions['open-embed-link']),
-						oneEmbedSelected && menuItem(actions['convert-to-bookmark']),
-						oneEmbeddableBookmarkSelected && menuItem(actions['convert-to-embed'])
+						menuItem(actions['open-embed-link'], { disabled: !oneEmbedSelected }),
+						menuItem(actions['convert-to-bookmark'], { disabled: !oneEmbedSelected }),
+						menuItem(actions['convert-to-embed'], { disabled: !oneEmbeddableBookmarkSelected })
 					)
 				),
 				menuSubmenu(

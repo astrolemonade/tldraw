@@ -2843,6 +2843,8 @@ export class Vec {
     // (undocumented)
     static FromArray(v: number[]): Vec;
     // (undocumented)
+    static IsNaN(A: VecLike): boolean;
+    // (undocumented)
     static Len(A: VecLike): number;
     // (undocumented)
     len(): number;

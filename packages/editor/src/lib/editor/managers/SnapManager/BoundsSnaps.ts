@@ -501,8 +501,8 @@ export class BoundsSnaps {
 						? 'x'
 						: 'y'
 					: nearestSnapsX.length
-					  ? 'x'
-					  : 'y'
+						? 'x'
+						: 'y'
 
 			const ratio = initialSelectionPageBounds.aspectRatio
 
@@ -1051,7 +1051,7 @@ export class BoundsSnaps {
 												'forward',
 												gapBreadthIntersection
 											),
-									  ]
+										]
 									: [
 											...findAdjacentGaps(
 												horizontal,
@@ -1067,7 +1067,7 @@ export class BoundsSnaps {
 												) as [Vec, Vec],
 												endEdge: selectionSides.left,
 											},
-									  ],
+										],
 						})
 
 						break
@@ -1155,7 +1155,7 @@ export class BoundsSnaps {
 													'forward',
 													gapBreadthIntersection
 												),
-										  ]
+											]
 										: [
 												...findAdjacentGaps(
 													vertical,
@@ -1171,7 +1171,7 @@ export class BoundsSnaps {
 													) as [Vec, Vec],
 													endEdge: selectionSides.top,
 												},
-										  ],
+											],
 							})
 						}
 						break

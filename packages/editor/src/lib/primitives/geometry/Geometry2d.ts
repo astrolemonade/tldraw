@@ -107,16 +107,6 @@ export abstract class Geometry2d {
 		return this._bounds
 	}
 
-	_snapPoints: Vec[] | undefined
-
-	// eslint-disable-next-line no-restricted-syntax
-	get snapPoints() {
-		if (!this._snapPoints) {
-			this._snapPoints = this.bounds.snapPoints
-		}
-		return this._snapPoints
-	}
-
 	// eslint-disable-next-line no-restricted-syntax
 	get center() {
 		return this.bounds.center

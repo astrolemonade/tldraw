@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Migrations } from '@tldraw/store'
-import { ShapeProps, TLHandle, TLShape, TLShapePartial, TLUnknownShape } from '@tldraw/tlschema'
+import {
+	ShapeProps,
+	TLHandle,
+	TLShape,
+	TLShapePartial,
+	TLUnknownShape,
+	VecModel,
+} from '@tldraw/tlschema'
 import { Box } from '../../primitives/Box'
 import { Vec } from '../../primitives/Vec'
 import { Geometry2d } from '../../primitives/geometry/Geometry2d'
@@ -26,6 +33,28 @@ export type TLShapeUtilFlag<T> = (shape: T) => boolean
 export interface TLShapeUtilCanvasSvgDef {
 	key: string
 	component: React.ComponentType
+}
+
+/**
+ * Describes how snapping works for this shape.
+ * @public
+ */
+export interface ShapeSnapInfo {
+	/**
+	 * When translating or resizing this or other shapes, which points on this shape should be
+	 * snapped to? Defaults to the 4 corners of the shape's bounds and the center of the shape.
+	 *
+	 * Set this to an empty array to disable shape bounds snapping entirely.
+	 */
+	boundsSnapPoints?: VecModel[]
+	/**
+	 * When dragging a handle, users can snap to the nearest point on a shape's geometry. This
+	 * property determines the geometry used for snapping. By default, it's the same returned by
+	 * {@link ShapeUtil['getGeometry']}.
+	 *
+	 * Set this to `null` to disable handle geometry snapping entirely.
+	 */
+	handleSnapGeometry?: Geometry2d | null
 }
 
 /** @public */
@@ -274,6 +303,13 @@ export abstract class ShapeUtil<Shape extends TLUnknownShape = TLUnknownShape> {
 	 */
 	getCanvasSvgDefs(): TLShapeUtilCanvasSvgDef[] {
 		return []
+	}
+
+	/**
+	 * Get the shape's snap info. See {@link ShapeSnapInfo}.
+	 */
+	getSnapInfo(shape: Shape): ShapeSnapInfo {
+		return {}
 	}
 
 	//  Events

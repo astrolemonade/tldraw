@@ -186,16 +186,18 @@ export class BoundsSnaps {
 	}
 
 	@computed private getSnapPointsCache() {
-		const { editor } = this
-		return editor.store.createComputedCache<BoundsSnapPoint[], TLShape>('snapPoints', (shape) => {
-			const pageTransfrorm = editor.getShapePageTransform(shape.id)
-			if (!pageTransfrorm) return undefined
-			const snapPoints = this.editor.getShapeGeometry(shape).snapPoints
-			return snapPoints.map((point, i) => {
-				const { x, y } = Mat.applyToPoint(pageTransfrorm, point)
-				return { x, y, id: `${shape.id}:${i}` }
-			})
-		})
+		return this.editor.store.createComputedCache<BoundsSnapPoint[], TLShape>(
+			'snapPoints',
+			(shape) => {
+				const pageTransform = this.editor.getShapePageTransform(shape.id)
+				const snapPoints = this.manager.getShapeSnapInfo(shape.id)?.boundsSnapPoints
+				if (!pageTransform || !snapPoints) return undefined
+				return snapPoints.map((point, i) => {
+					const { x, y } = Mat.applyToPoint(pageTransform, point)
+					return { x, y, id: `${shape.id}:${i}` }
+				})
+			}
+		)
 	}
 
 	getSnapPoints(shapeId: TLShapeId) {
@@ -208,12 +210,12 @@ export class BoundsSnaps {
 		const snappableShapes = this.manager.getSnappableShapes()
 		const result: BoundsSnapPoint[] = []
 
-		snappableShapes.forEach((shapeId) => {
+		for (const shapeId of snappableShapes) {
 			const snapPoints = snapPointsCache.get(shapeId)
 			if (snapPoints) {
 				result.push(...snapPoints)
 			}
-		})
+		}
 
 		return result
 	}

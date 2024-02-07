@@ -1,7 +1,15 @@
-import { atom, computed, EMPTY_ARRAY } from '@tldraw/state'
-import { isShapeId, TLFrameShape, TLGroupShape, TLParentId, TLShapeId } from '@tldraw/tlschema'
+import { EMPTY_ARRAY, atom, computed } from '@tldraw/state'
+import {
+	TLFrameShape,
+	TLGroupShape,
+	TLParentId,
+	TLShape,
+	TLShapeId,
+	isShapeId,
+} from '@tldraw/tlschema'
 import { Vec, VecLike } from '../../../primitives/Vec'
 import type { Editor } from '../../Editor'
+import { ShapeSnapInfo } from '../../shapes/ShapeUtil'
 import { BoundsSnaps } from './BoundsSnaps'
 import { HandleSnaps } from './HandleSnaps'
 
@@ -106,4 +114,33 @@ export class SnapManager {
 	@computed getCurrentCommonAncestor() {
 		return this.editor.findCommonAncestor(this.editor.getSelectedShapes())
 	}
+
+	@computed private shapeSnapInfoCache() {
+		return this.editor.store.createComputedCache<Required<ShapeSnapInfo>, TLShape>(
+			'snapInfo',
+			(shape) => {
+				const util = this.editor.getShapeUtil(shape)
+				const snapInfo = util.getSnapInfo(shape)
+
+				const boundsSnapPoints =
+					snapInfo.boundsSnapPoints ?? getDefaultBoundsSnapPoints(this.editor, shape)
+
+				const handleSnapGeometry =
+					snapInfo.handleSnapGeometry !== undefined
+						? snapInfo.handleSnapGeometry
+						: this.editor.getShapeGeometry(shape)
+
+				return { boundsSnapPoints, handleSnapGeometry }
+			}
+		)
+	}
+
+	getShapeSnapInfo(shapeId: TLShapeId) {
+		return this.shapeSnapInfoCache().get(shapeId)
+	}
+}
+
+function getDefaultBoundsSnapPoints(editor: Editor, shape: TLShape) {
+	const bounds = editor.getShapeGeometry(shape).bounds
+	return [...bounds.corners, bounds.center]
 }

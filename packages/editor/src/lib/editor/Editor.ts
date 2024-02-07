@@ -39,9 +39,9 @@ import {
 	isShapeId,
 } from '@tldraw/tlschema'
 import {
+	assert,
 	JsonObject,
 	annotateError,
-	assert,
 	compact,
 	dedupe,
 	deepCopy,

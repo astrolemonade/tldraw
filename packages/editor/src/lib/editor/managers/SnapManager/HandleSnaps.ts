@@ -1,6 +1,6 @@
 import { computed } from '@tldraw/state'
 import { VecModel } from '@tldraw/tlschema'
-import { deepCopy } from '@tldraw/utils'
+import { assertExists, deepCopy } from '@tldraw/utils'
 import { Mat } from '../../../primitives/Mat'
 import { Vec } from '../../../primitives/Vec'
 import { uniqueId } from '../../../utils/uniqueId'
@@ -13,17 +13,6 @@ export class HandleSnaps {
 		this.editor = manager.editor
 	}
 
-	@computed private getOutlinesInPageSpace() {
-		return Array.from(this.manager.getSnappableShapes(), (id) => {
-			const geometry = this.editor.getShapeGeometry(id)
-			const outline = deepCopy(geometry.vertices)
-			if (geometry.isClosed) outline.push(outline[0])
-			const pageTransform = this.editor.getShapePageTransform(id)
-			if (!pageTransform) throw Error('No page transform')
-			return Mat.applyToPoints(pageTransform, outline)
-		})
-	}
-
 	snapHandle({
 		handlePoint,
 		additionalSegments,
@@ -32,27 +21,22 @@ export class HandleSnaps {
 		additionalSegments: Vec[][]
 	}): SnapData | null {
 		const snapThreshold = this.manager.getSnapThreshold()
-		const outlinesInPageSpace = this.getOutlinesInPageSpace()
 
 		// Find the nearest point that is within the snap threshold
 		let minDistance = snapThreshold
 		let nearestPoint: Vec | null = null
-		let C: VecModel, D: VecModel, nearest: Vec, distance: number
 
-		const allSegments = [...outlinesInPageSpace, ...additionalSegments]
-		for (const outline of allSegments) {
-			for (let i = 0; i < outline.length - 1; i++) {
-				C = outline[i]
-				D = outline[i + 1]
+		for (const shapeId of this.manager.getSnappableShapes()) {
+			const handleSnapGeometry = this.manager.getShapeSnapInfo(shapeId)?.handleSnapGeometry
+			if (!handleSnapGeometry) continue
 
-				nearest = Vec.NearestPointOnLineSegment(C, D, handlePoint)
-				distance = Vec.Dist(handlePoint, nearest)
+			const nearestOnShape = handleSnapGeometry.nearestPoint(handlePoint)
+			const distance = Vec.Dist(handlePoint, nearestOnShape)
 
-				if (isNaN(distance)) continue
-				if (distance < minDistance) {
-					minDistance = distance
-					nearestPoint = nearest
-				}
+			if (isNaN(distance)) continue
+			if (distance < minDistance) {
+				minDistance = distance
+				nearestPoint = nearestOnShape
 			}
 		}
 

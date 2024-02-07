@@ -1,8 +1,8 @@
 import {
+	assert,
 	TLDefaultShape,
 	TLShapeId,
 	TLShapePartial,
-	assert,
 	assertExists,
 	createShapeId,
 	getIndexAbove,
@@ -45,7 +45,10 @@ export const TL = new Proxy(
 			return createElement(key as string)
 		},
 	}
-) as { [K in TLDefaultShape['type']]: (props: PropsForShape<K>) => null }
+) as { [K in TLDefaultShape['type']]: (props: PropsForShape<K>) => null } & Record<
+	string,
+	(props: PropsForShape<string>) => null
+>
 
 export function shapesFromJsx(shapes: React.JSX.Element | Array<React.JSX.Element>) {
 	const ids = {} as Record<string, TLShapeId>

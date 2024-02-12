@@ -80,6 +80,19 @@ export function createInstanceRecordType(stylesById: Map<string, Map<string, Sty
 	// 	}
 	// 	stylesForNextShapeValidators[styleId] = T.optional(T.object(validators))
 	// }
+	const stylesForNextShapeValidators = {} as Record<
+		string,
+		T.Validatable<Record<string, T.Validatable<unknown>>>
+	>
+	for (const [id, style] of stylesById) {
+		const o = {} as Record<string, T.Validator<unknown>>
+		for (const [shapeType, styleProp] of style) {
+			o[shapeType] = T.optional(styleProp)
+		}
+		stylesForNextShapeValidators[id] = T.object(o).optional() as T.Validator<
+			Record<string, T.Validator<unknown>>
+		>
+	}
 
 	const instanceTypeValidator: T.Validator<TLInstance> = T.model(
 		'instance',
@@ -91,7 +104,7 @@ export function createInstanceRecordType(stylesById: Map<string, Map<string, Sty
 			brush: boxModelValidator.nullable(),
 			opacityForNextShape: opacityValidator,
 			// TODO: fix validation
-			stylesForNextShape: T.any,
+			stylesForNextShape: T.object(stylesForNextShapeValidators),
 			cursor: cursorValidator,
 			scribbles: T.arrayOf(scribbleValidator),
 			isFocusMode: T.boolean,

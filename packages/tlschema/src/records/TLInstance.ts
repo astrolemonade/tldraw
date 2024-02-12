@@ -74,7 +74,7 @@ export const instanceIdValidator = idValidator<TLInstanceId>('instance')
 export function createInstanceRecordType(stylesById: Map<string, Map<string, StyleProp<unknown>>>) {
 	const stylesForNextShapeValidators = {} as Record<
 		string,
-		T.Validatable<Record<string, T.Validatable<unknown>>>
+		T.Validator<Record<string, T.Validator<unknown>>>
 	>
 	for (const [id, style] of stylesById) {
 		const o = {} as Record<string, T.Validator<unknown>>
